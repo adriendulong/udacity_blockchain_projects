@@ -13,7 +13,7 @@ To create a new block with some data inside make a POST request at `http://local
 The POST must be JSON encoded and contains a `body` field.
 For example:
 ```
-    {
-        "body": "This is a new block"
-    }
+{
+    "body": "This is a new block"
+}
 ```
