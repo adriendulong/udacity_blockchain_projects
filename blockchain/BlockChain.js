@@ -9,8 +9,9 @@
 |    - validateChain()
 |  ======================================================*/
 const SHA256 = require('crypto-js/sha256');
-const LevelSandbox = require('./LevelSandbox.js');
+const LevelSandbox = require('../LevelSandbox.js');
 const Block = require('./Block.js');
+const hex2ascii = require('hex2ascii');
 
 class Blockchain {
     constructor(){
@@ -69,12 +70,34 @@ class Blockchain {
     }
   
     //getBlock by its height
-    getBlock(height) {
+    getBlockByHeight(height) {
       return new Promise((resolve, reject) => {
         this.db.getLevelDBData(height).then(result => {
-          resolve(JSON.parse(result));
+          resolve(this._decodeBlockStory(JSON.parse(result)));
         })
         .catch(err => reject(err));
+      })
+    }
+
+    //getBlockByHash 
+    getBlockByHash(hash) {
+      return new Promise((resolve,reject) => {
+        this.db.getBlockByHash(hash).then(block => {
+          resolve(this._decodeBlockStory(block));
+        }).catch(err => reject(err));
+      })
+    } 
+
+    //getBlocksByWalletAddress 
+    getBlocksByWalletAddress(address) {
+      return new Promise((resolve,reject) => {
+        this.db.getBlocksByWalletAddress(address).then(blocks => {
+          let blocksDecoded = [];
+          for(let i = 0; i < blocks.length; i++){
+            blocksDecoded.push(this._decodeBlockStory(blocks[i]))
+          }
+          resolve(blocksDecoded);
+        }).catch(err => reject(err));
       })
     }
     
@@ -88,11 +111,17 @@ class Blockchain {
           newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
           return this.db.addLevelDBData(lastestBlock.height + 1, JSON.stringify(newBlock));
         }).then(result => {
-          resolve(result);
+          resolve(this._decodeBlockStory(JSON.parse(result)));
         }).catch(err => {
           reject(err);
         });
       });
+    }
+
+    //decode the story of a block from hex
+    _decodeBlockStory(block){
+      block.data.star.storyDecoded = hex2ascii(block.data.star.story);
+      return block;
     }
   
     //validateBlock check that a block is valid depending on its hash

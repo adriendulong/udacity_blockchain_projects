@@ -63,7 +63,44 @@ class LevelSandbox {
             })
         });
       	
-      }
+    }
+
+    //Get a block by its hash
+    getBlockByHash(hash) {
+        return new Promise((resolve, reject) => {
+            let rs = this.db.createReadStream()
+            rs.on('data', function (data) {
+                let block = JSON.parse(data.value);
+                if(block.hash === hash) {
+                    resolve(block);
+                    rs.destroy();
+                }
+            })
+            rs.on('error', function (err) {
+                reject(err);
+            })
+        });
+    }
+
+    //Get the blocks by the wallet address that created it
+    getBlocksByWalletAddress(address) {
+        return new Promise((resolve, reject) => {
+            let blocks = [];
+            let rs = this.db.createReadStream()
+            rs.on('data', function (data) {
+                let block = JSON.parse(data.value);
+                if(block.data.address === address) {
+                    blocks.push(block);
+                }
+            })
+            rs.on('close', () => {
+                resolve(blocks);
+            })
+            rs.on('error', function (err) {
+                reject(err);
+            })
+        });
+    }
 }
 
 // Export the class

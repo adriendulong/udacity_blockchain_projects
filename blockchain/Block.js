@@ -3,10 +3,10 @@
 |  ==============================================*/
 
 class Block {
-	constructor(data){
+	constructor(body){
      this.hash = "";
      this.height = 0;
-     this.data = data;
+     this.data = body;
      this.timeStamp = 0;
      this.previousblockHash = "0x";
     }

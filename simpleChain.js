@@ -2,8 +2,8 @@
 |  Use this file to test your project.
 |  =========================================================*/
 
-const BlockChain = require('./BlockChain.js');
-const Block = require('./Block.js');
+const BlockChain = require('./blockchain/BlockChain.js');
+const Block = require('./blockchain/Block.js');
 
 let myBlockChain = new BlockChain.Blockchain();
 
