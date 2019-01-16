@@ -82,6 +82,9 @@ class StarController {
             //check that this address has been validated
             if(!this.mempool.mempoolValid[req.body.address]) return res.status(404).send('You must validate your address before posting a new star');
 
+            if(!req.body.star) return res.status(404).send('Provide star infos');
+            if(!req.body.star.ra || !req.body.star.dec || !req.body.star.story) return res.status(404).send('You must provide ra, dec and story for a valid star');
+
             //build the body of the block
             let body = {
                 address: req.body.address,
