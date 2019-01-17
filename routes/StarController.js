@@ -18,7 +18,7 @@ class StarController {
             //Check if the hash of the block is provided
             if(!req.params.hash) return res.status(404).send("Need the hash of the block");
 
-            this.myBlockChain.getBlockByHash(req.params.hash).then(blocks => {
+            this.myBlockChain.getBlockByHash(req.params.hash).then(block => {
                 if(!block) throw new Error('Problem getting the block');
                 return res.json(block);
             })
@@ -61,7 +61,7 @@ class StarController {
             //in the request is equal or inferior
             this.myBlockChain.getBlockHeight().then(maxHeight => {
                 if(height > maxHeight) throw new Error('The height provided is above the max height of the chain');
-                return myBlockChain.getBlockByHeight(height);
+                return this.myBlockChain.getBlockByHeight(height);
             })
             .then(block => {
                 if(!block) throw new Error('Problem getting the block');
@@ -98,6 +98,7 @@ class StarController {
 
             //Add the block to our blockchain
             this.myBlockChain.addBlock(newBlock).then(result => {
+                this.mempool.removeValidRequest(req.body.address);
                 return res.json(result);
             })
             .catch(err => res.status(404).send(err.message));
